@@ -3,7 +3,9 @@
 
 var slideshow = (function () {
 
-  let slideShowContainers = new Map();
+  let playTimeout = 3000;
+
+  const slideShowContainers = new Map();
 
   const init = () => {
 
@@ -14,14 +16,14 @@ var slideshow = (function () {
     let nextSlideBtn = document.querySelectorAll('.slide-control-next');
     prevSlideBtn.forEach(btn => btn.addEventListener('click', onclick, { passive: true }));
     nextSlideBtn.forEach(btn => btn.addEventListener('click', onclick, { passive: true }));
-    let playBtn = document.querySelectorAll(' .play-pause');
+    let playBtn = document.querySelectorAll(' .play-pause-control');
     playBtn.forEach(btn => btn.addEventListener('click', play, { passive: true }));
   }
 
 
   const setUpContainer = (container) => {
     let id = '#' + container.id;
-    let selector = id.concat(' ','.slide-content');
+    let selector = id.concat(' ', '.slide-content');
     let slides = document.querySelectorAll(selector);
     slides[0].style.opacity = 1;
     let captionText = document.querySelector(id.concat(' ', '.slideshow-caption .caption'));
@@ -41,8 +43,13 @@ var slideshow = (function () {
     event = event || window.event;
     let element = event.target || event.srcElement;
     // if the element is not a div with class slide-control-*. clime up. we need div
-    while(element.className.match(/slide-control-(prev|next)/) == null){
+    while (element.className.match(/slide-control-(prev|next)/) == null) {
       element = element.parentNode;
+    }
+
+    if (typeof element == 'undefined') {
+      console.error('cannot find slide-control element');
+      return;
     }
 
     let containerId = extractId(element.dataset.ref);
@@ -61,7 +68,7 @@ var slideshow = (function () {
 
 
   const extractId = (ref) => {
-    if(typeof ref == 'undefined') {
+    if (typeof ref == 'undefined') {
       console.error('ref property is undefined');
       return '';
     }
@@ -88,12 +95,12 @@ var slideshow = (function () {
     }
     let id = containerObj.containerId;
     let slides = document.querySelectorAll(id.concat(' ', '.slide-content'));
-    if(typeof slides == 'undefined') {
+    if (typeof slides == 'undefined') {
       console.error('.slide-content not found');
       return;
     }
     let slideIndex = containerObj.slideIndex;
-   
+
     if (n > slideIndex) {
       // if reached end of slides, start from begining
       n = n > slides.length - 1 ? 0 : n;
@@ -125,31 +132,46 @@ var slideshow = (function () {
     event = event || window.event;
     let element = event.target || event.srcElement;
 
+    // if the element is not a div with class slide-control-*. clime up. we need div
+    while (element.className.match(/play-pause-control/) == null) {
+      element = element.parentNode;
+    }
+
+    if (typeof element == 'undefined') {
+      console.error('cannot find play-pause-control element');
+      return;
+    }
+
     let containerId = extractId(element.dataset.ref);
 
-    if(containerId === ''){
+    if (containerId === '') {
       console.error('containerId is undefined');
       return;
     }
     let containerObj = slideShowContainers.get(containerId);
 
-    if(containerObj.timer === null) {
+    if (containerObj.timer === null) {
       setTimer(containerObj);
-      playPauseBtn(containerObj.containerId, 'bottom');
-    }else {
+      playPauseBtn(containerObj.containerId, 'pause-btn');
+    } else {
       stopTimer(containerObj);
-      playPauseBtn(containerObj.containerId, 'top');
-    }
-
+      playPauseBtn(containerObj.containerId, 'play-btn');
+    } 
   }
 
-  const playPauseBtn = (containerId, position) => {
-    let btn = document.querySelector(containerId.concat(' ', '.play-pause'));
-    btn.style.backgroundPosition = position;
+  const playPauseBtn = (containerId, cls) => {
+    let parent = document.querySelector(containerId.concat(' ', '.play-pause-control'));
+    let nodes = parent.childNodes;
+
+    nodes.forEach(node => {
+      if (node.className.match(/(play|pause)-btn/) !== null) {
+        node.className = cls;
+      }
+    });
   }
 
   const setTimer = (containerObj) => {
-    containerObj.timer = setInterval(() => plusSlides(containerObj.containerId, 1), 3000);
+    containerObj.timer = setInterval(() => plusSlides(containerObj.containerId, 1), playTimeout);
   }
 
   const stopTimer = (containerObj) => {
@@ -157,6 +179,12 @@ var slideshow = (function () {
     containerObj.timer = null;
   }
 
+  const setTimeout = (timeout) => {
+    playTimeout = timeout;
+  }
   init();
 
+  return {
+    setTimeout: setTimeout
+  }
 })();
