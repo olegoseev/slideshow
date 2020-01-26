@@ -1,0 +1,195 @@
+$animation-duration: 0.5s;
+$slide-height: $grid-row-height;
+$white: #fff;
+$play-pause-img: url("/image/play-pause.png");
+
+div {
+  .slideshow-container {
+    max-width: 100%;
+    height: $slide-height;
+    position: relative;
+    overflow: hidden;
+
+    .slide-content {
+      width: 100%;
+      height: 100%;
+      position: absolute;
+      img {
+        width: 100%;
+        height: 100%;
+      }
+      .slide-caption {
+        display: none;
+      }
+      opacity: 0;
+    }
+
+    .slide-control {
+      width: 36px;
+      background: rgba(#000, 0.3);
+      position: absolute;
+      z-index: 1;
+      transition: background 0.5s;
+      height: 72px;
+      top: 50%;
+      transform: translateY(-50%);
+      &:hover {
+        background: rgba(#000, 0.5);
+        cursor: pointer;
+      }
+    }
+
+    .slide-control-prev {
+      @extend .slide-control;
+      left: 0;
+      border-radius: 0 10px 10px 0;
+    }
+
+    .slide-control-next {
+      @extend .slide-control;
+      left: auto;
+      right: 0;
+      border-radius: 10px 0 0 10px;
+    }
+
+    .arrow {
+      display: inline-block;
+      border: 3px solid white;
+      width: 10px;
+      height: 10px;
+      border-left: none;
+      border-bottom: none;
+      margin: auto;
+      position: absolute;
+      left: 0;
+      right: 0;
+      top: 0;
+      bottom: 0;
+    }
+
+    .arrow-left {
+      @extend .arrow;
+      transform: rotateZ(-135deg);
+    }
+
+    .arrow-right {
+      @extend .arrow;
+      transform: rotateZ(45deg);
+    }
+
+    > .slideshow-caption {
+      position: absolute;
+      bottom: 0;
+      z-index: 1;
+      color: $white;
+      font-size: 1.2rem;
+      text-align: center;
+      vertical-align: middle;
+      width: 100%;
+      height: 50px;
+      overflow: hidden;
+      background: rgba(#fff, 0.3);
+    }
+
+    .play-pause {
+      width: 32px;
+      height: 32px;
+      position: absolute;
+      z-index: 5;
+      margin: 5px;
+      cursor: pointer;
+      background: no-repeat top/cover $play-pause-img;
+    }
+
+    .animation {
+      animation-duration: $animation-duration;
+      animation-timing-function: linear;
+      animation-fill-mode: forwards;
+    }
+    .moveLeftCurrent {
+      @extend .animation;
+      animation-name: moveLeftCurrent;
+    }
+
+    .moveLeftNext {
+      animation-name: moveLeftNext;
+      @extend .animation;
+    }
+
+    .moveRightCurrent {
+      animation-name: moveRightCurrent;
+      @extend .animation;
+    }
+
+    .moveRightNext {
+      animation-name: moveRightNext;
+      @extend .animation;
+    }
+  }
+
+  .play-pause-btn {
+    width: 20px;
+    height: 20px;
+    position: absolute;
+    z-index: 2;
+    margin: 3px;
+    cursor: pointer;
+    border: 2px solid blueviolet;
+    border-radius: 50%;
+  }
+  .play-btn {
+    position: absolute;
+    width: 0; 
+    height: 0;
+    top: 2px;
+    left: 4px;
+    z-index: 3;
+    border-top: 6px solid transparent;
+    border-bottom: 6px solid transparent;
+    border-left: 10px solid blueviolet;
+  }
+}
+
+@keyframes moveLeftCurrent {
+  from {
+    margin-left: 0;
+    opacity: 1;
+  }
+  to {
+    margin-left: -100%;
+    opacity: 1;
+  }
+}
+
+@keyframes moveLeftNext {
+  from {
+    margin-left: 100%;
+    opacity: 1;
+  }
+  to {
+    margin-left: 0;
+    opacity: 1;
+  }
+}
+
+@keyframes moveRightCurrent {
+  from {
+    margin-left: 0;
+    opacity: 1;
+  }
+  to {
+    margin-left: 100%;
+    opacity: 1;
+  }
+}
+
+@keyframes moveRightNext {
+  from {
+    margin-left: -100%;
+    opacity: 1;
+  }
+  to {
+    margin-left: 0;
+    opacity: 1;
+  }
+}
