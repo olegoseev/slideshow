@@ -99,7 +99,10 @@ div {
       width: 100%;
       height: $caption-height;
       overflow: hidden;
-      background: rgba(#fff, 0.3);
+      &:hover {
+        background: rgba(#fff, 0.55);
+        color: #000;
+      }
     }
 
     .animation {
