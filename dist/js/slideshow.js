@@ -1,44 +1,78 @@
 
-'use strict';
-
 var slideshow = (function () {
 
-  let playTimeout = 3000;
-
+  class Container {
+    constructor(id, slideIndex, timeout, timer) {
+      this.id = id;
+      this.slideIndex = slideIndex;
+      this.timeout = timeout;
+      this.timer = timer;
+    }
+  }
+  
   const slideShowContainers = new Map();
 
-  const init = () => {
-
-    let showContainers = document.querySelectorAll('.slideshow-container');
-    showContainers.forEach(container => setUpContainer(container));
-
-    let prevSlideBtn = document.querySelectorAll('.slide-control-prev') || [];
-    prevSlideBtn.forEach(btn => btn.addEventListener('click', onclick, { passive: true }));
-    let nextSlideBtn = document.querySelectorAll('.slide-control-next') || [];
-    nextSlideBtn.forEach(btn => btn.addEventListener('click', onclick, { passive: true }));
-    let playBtn = document.querySelectorAll(' .play-pause-control') || [];
-    playBtn.forEach(btn => btn.addEventListener('click', play, { passive: true }));
-    let navBtn = document.querySelectorAll('.slide-nav-control') || [];
-    navBtn.forEach(btn => btn.addEventListener('click', navigate, {passive: true}));
+  const init = (timeout = 3000, startIndex = 0) => {
+    let slideShow = document.querySelectorAll('.slideshow-container');
+    if(slideShow && slideShow.length > 0) {
+      slideShow.forEach(container => initContainer('#'.concat(container.id), timeout, startIndex));
+    }
   }
 
+  const initContainer = (id, timeout = 3000, startIndex = 0) => {
+    let element = document.querySelector(id);
+    if(element) {
 
-  const setUpContainer = (container) => {
-    let id = '#' + container.id;
+      let container = new Container(id, startIndex, timeout, null);
+ 
+      slideShowContainers.set(id, container);
+      initShow(id);
+      initControls(id);
+      initPlayer(id);
+    }
+  }
+
+  const initShow = (id) => {
     let selector = id.concat(' .slide-content');
     let slides = document.querySelectorAll(selector);
-    slides[0].style.opacity = 1;
-    let captionText = document.querySelector(id.concat(' .slideshow-caption .caption'));
-    if(typeof captionText !== 'undefined' && captionText != null){
-      captionText.innerHTML = slides[0].querySelector(id.concat(' .slide-caption')).innerHTML;
+    if(slides == null || slides.length == 0) {
+      console.error('no slides found for container id: ', id);
     }
+    let container = slideShowContainers.get(id);
+    if(container) {
+      let slideIndex = container.slideIndex < slides.length ? container.slideIndex : slides.length;
+      slides[slideIndex].style.opacity = 1;
+      let captionText = document.querySelector(id.concat(' .slideshow-caption .caption'));
+      if(captionText != null){
+        captionText.innerHTML = slides[slideIndex].querySelector(id.concat(' .slide-content .slide-caption')).innerHTML || '' ;
+      }
+    }
+  }
 
-    let containerObj = {
-      containerId: id,
-      slideIndex: 0,
-      timer: null
+  const initControls = (id) => {
+      let prevBtn = document.querySelector(id.concat(' .slide-control-prev'));
+      if(prevBtn) {
+        prevBtn.addEventListener('click', onclick, { passive: true });
+      }
+      let nextBtn = document.querySelector(id.concat(' .slide-control-next'));
+      if(nextBtn) {
+        nextBtn.addEventListener('click', onclick, { passive: true });
+      }
+      let playBtn = document.querySelector(id.concat(' .play-pause-control'));
+      if(playBtn) {
+        playBtn.addEventListener('click', play, { passive: true });
+      }
+      let navBtn = document.querySelector(id.concat(' .slide-nav-control'));
+      if(navBtn) {
+        navBtn.addEventListener('click', navigate, {passive: true});
+      }
+  }
+
+  const initPlayer= (id) => {
+    let container  = slideShowContainers.get(id);
+    if(container.timeout && container.timeout > 0) {
+      startPlayer(container);
     }
-    slideShowContainers.set(id, containerObj);
   }
 
   const getElementFromEvent= (event, regex) => {
@@ -91,25 +125,26 @@ var slideshow = (function () {
   }
 
   const plusSlides = (id, dir) => {
-    let containerObj = slideShowContainers.get(id);
-    let n = parseInt(containerObj.slideIndex) + dir;
-    moveSlide(containerObj, n);
+    let container = slideShowContainers.get(id);
+    let n = parseInt(container.slideIndex) + dir;
+    moveSlide(container, n);
   }
 
-  const moveSlide = (containerObj, n) => {
+  const moveSlide = (container, n) => {
     let current, next;
     let animationClass = {
       current: '',
       next: ''
     }
 
-    let id = containerObj.containerId;
+    let id = container.id;
     let slides = document.querySelectorAll(id.concat(' .slide-content'));
     if (typeof slides == 'undefined') {
       console.error('.slide-content not found');
       return;
     }
-    let slideIndex = containerObj.slideIndex;
+
+    let slideIndex = container.slideIndex;
 
     if (n > slideIndex) {
       // if reached end of slides, start from begining
@@ -137,8 +172,8 @@ var slideshow = (function () {
 
       slideIndex = n;
     }
-    containerObj.slideIndex = slideIndex;
-    updateBulletPoint(containerObj, slideIndex);
+    container.slideIndex = slideIndex;
+    updateBulletPoint(container, slideIndex);
   }
 
 
@@ -151,20 +186,27 @@ var slideshow = (function () {
       return;
     }
 
-    let containerId = extractId(element.dataset.ref);
+    let id = extractId(element.dataset.ref);
 
-    if (containerId === '') {
-      console.error('containerId is undefined');
+    if (id === '') {
+      console.error('id is undefined');
       return;
     }
-    let containerObj = slideShowContainers.get(containerId);
 
-    if (containerObj.timer === null) {
-      setTimer(containerObj);
-      playPauseBtn(containerObj.containerId, 'pause-btn');
+    let container = slideShowContainers.get(id);
+
+    startPlayer(container);
+  }
+
+
+  const startPlayer = (container) => {
+
+    if (container.timer === null) {
+      setTimer(container);
+      playPauseBtn(container.id, 'pause-btn');
     } else {
-      stopTimer(containerObj);
-      playPauseBtn(containerObj.containerId, 'play-btn');
+      stopTimer(container);
+      playPauseBtn(container.id, 'play-btn');
     } 
   }
 
@@ -181,26 +223,26 @@ var slideshow = (function () {
 
     regex = /slide-nav-control/;
     let parentNode = getElementFromEvent(event, regex);
-    let containerId = extractId(parentNode.dataset.ref);
-    let containerObj = slideShowContainers.get(containerId);
-    if(typeof containerObj == 'undefined') {
-      console.error('container not found');
+    let id = extractId(parentNode.dataset.ref);
+    let container = slideShowContainers.get(id);
+    if(typeof container == 'undefined') {
+      console.error('container not found ${container.id}');
       return;
     }
-    moveSlide(containerObj, slideIndex);
+    moveSlide(container, slideIndex);
   }
 
-  const updateBulletPoint = (containerObj, slideIndex) => {
-    let containerId = containerObj.containerId;
-    let slideBullets = document.querySelectorAll(containerId.concat(' .slide-nav-control', ' .slide-bullet'));
+  const updateBulletPoint = (container, slideIndex) => {
+    let id = container.id;
+    let slideBullets = document.querySelectorAll(id.concat(' .slide-nav-control', ' .slide-bullet'));
     slideBullets.forEach(bullet => bullet.className = 'slide-bullet');
     if(slideBullets[slideIndex]) {
       slideBullets[slideIndex].classList.add('active');
     }
   }
 
-  const playPauseBtn = (containerId, cls) => {
-    let parent = document.querySelector(containerId.concat(' .play-pause-control'));
+  const playPauseBtn = (id, cls) => {
+    let parent = document.querySelector(id.concat(' .play-pause-control'));
     let nodes = parent.childNodes;
 
     nodes.forEach(node => {
@@ -210,29 +252,18 @@ var slideshow = (function () {
     });
   }
 
-  const setTimer = (containerObj) => {
-    containerObj.timer = setInterval(() => plusSlides(containerObj.containerId, 1), playTimeout);
+  const setTimer = (container) => {
+    container.timer = setInterval(() => plusSlides(container.id, 1), container.timeout);
   }
 
-  const stopTimer = (containerObj) => {
-    clearInterval(containerObj.timer);
-    containerObj.timer = null;
+  const stopTimer = (container) => {
+    clearInterval(container.timer); 
+    container.timer = null;
   }
-
-  // In case if default timeout is too slow/fast
-  const setTimeout = (timeout) => {
-    playTimeout = timeout;
-    slideShowContainers.forEach(containerObj => {
-      if(containerObj.timer !== null) {
-        stopTimer(containerObj);
-        startTimer(containerObj);
-      }
-    });
-  }
-
-  init();
 
   return {
-    setTimeout: setTimeout
+    init: init,
+    initContainer: initContainer
   }
+
 })();
