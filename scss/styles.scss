@@ -4,7 +4,7 @@
   --rowNum: 3;
   --colNum: 6;
 }
-$grid-row-height: 380px;
+$grid-row-height: 300px;
 
 @import "slideshow";
 
@@ -35,7 +35,8 @@ body {
 
 @mixin box {
   background: lightyellow;
-  border: 1px solid lightseagreen;
+  //border: 1px solid lightseagreen;
+  box-shadow: 0px 0px 8px 3px #444;
   height: $grid-row-height;
 }
 

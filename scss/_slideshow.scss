@@ -1,10 +1,18 @@
 $animation-duration: 0.5s;
-$slide-height: $grid-row-height;
+$slide-height: 100%;
 $caption-text: #fff;
-$play-control-color:#772dff;
+$play-control-color: #772dff;
 $play-control-bg: #fff;
 $pause-control-color: #ff1818;
 $caption-height: 50px;
+
+@mixin bg-transit  {
+  transition: background 0.5s;
+}
+
+* {
+  box-sizing: border-box;
+}
 
 div {
   .slideshow-container {
@@ -28,11 +36,11 @@ div {
     }
 
     .slide-control {
+      @include bg-transit;
       width: 36px;
       background: rgba(#000, 0.3);
       position: absolute;
       z-index: 1;
-      transition: background 0.5s;
       height: 72px;
       top: 50%;
       transform: translateY(-50%);
@@ -118,42 +126,72 @@ div {
       animation-name: moveRightNext;
       @extend .animation;
     }
-  }
+    .play-pause-control {
+      bottom: 0;
+      background: $play-control-bg;
+      width: 20px;
+      height: 20px;
+      position: absolute;
+      z-index: 2;
+      margin: ($caption-height - 35px) 8px;
+      cursor: pointer;
+      border: 2px solid rgba($play-control-color, 0.8);
+      border-radius: 50%;
 
-  .play-pause-control {
-    bottom: 0;
-    background: $play-control-bg;
-    width: 20px;
-    height: 20px;
-    position: absolute;
-    z-index: 2;
-    margin: ($caption-height - 35px) 8px;
-    cursor: pointer;
-    border: 2px solid rgba($play-control-color, .8);
-    border-radius: 50%;
-  }
-  .play-btn {
-    position: absolute;
-    width: 0; 
-    height: 0;
-    top: 3px;
-    left: 5px;
-    z-index: 3;
-    border-top: 5px solid transparent;
-    border-bottom: 5px solid transparent;
-    border-left: 7px solid rgba($play-control-color, .8);
-  }
-  .pause-btn {
-    position: absolute;
-    width: 6px; 
-    height: 8px;
-    top: 4px;
-    left: 5px;
-    z-index: 3;
-    border-top: 0;
-    border-bottom: 0;
-    border-left: 2px solid rgba($pause-control-color, .8);
-    border-right: 2px solid rgba($pause-control-color, .8);
+      .play-btn {
+        position: absolute;
+        width: 0;
+        height: 0;
+        top: 3px;
+        left: 5px;
+        z-index: 3;
+        border-top: 5px solid transparent;
+        border-bottom: 5px solid transparent;
+        border-left: 7px solid rgba($play-control-color, 0.8);
+      }
+      .pause-btn {
+        position: absolute;
+        width: 6px;
+        height: 8px;
+        top: 4px;
+        left: 5px;
+        z-index: 3;
+        border-top: 0;
+        border-bottom: 0;
+        border-left: 2px solid rgba($pause-control-color, 0.8);
+        border-right: 2px solid rgba($pause-control-color, 0.8);
+      }
+    }
+
+    .slide-nav-control {
+      @include bg-transit;
+      position: absolute;
+      margin-top: 8px;
+      margin-left: 50%;
+      transform: translateX(-50%);
+      text-align: justify;
+      height: 32px;
+      padding: 3px 6px;
+      border: 1px solid #fff;
+      border-radius: 4px;
+      z-index: 3;
+      &:hover {
+        background: rgba(#fff,.6);
+      }
+      .slide-bullet {
+        @include bg-transit;
+        display: inline-block;
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        margin: 0 3px;
+        background: rgba(0,0,0,.45);
+        cursor: pointer;
+        &.active {
+          background: rgba(0,0,0,.85);
+        }
+      }
+    }
   }
 }
 
