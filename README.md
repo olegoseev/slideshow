@@ -98,5 +98,5 @@ All files are located in the dist/ directory. CSS styles include CSS and SCSS ve
 
 # Example
 
-Here is an [example](https://github.com/olegoseev/slideshow/tree/master/example) of the slideshow.
+Here is an live [example](https://olegoseev.github.io/slideshow/) of the slideshow.
 
