@@ -243,13 +243,16 @@ var slideshow = (function () {
 
   const playPauseBtn = (id, cls) => {
     let parent = document.querySelector(id.concat(' .play-pause-control'));
-    let nodes = parent.childNodes;
 
-    nodes.forEach(node => {
-      if (node.className.match(/(play|pause)-btn/) !== null) {
-        node.className = cls;
-      }
-    });
+    if(parent) {
+      let nodes = parent.childNodes;
+
+      nodes.forEach(node => {
+        if (node.className.match(/(play|pause)-btn/) !== null) {
+          node.className = cls;
+        }
+      });
+    }
   }
 
   const setTimer = (container) => {
