@@ -4,12 +4,14 @@
 Simple lightweight slideshow (carousel) for displaying a list of items in horizontal order. No third party libraries. The slideshow using javascript to initialize slides and CSS3 transitions to move the slides.
 
 ## Features
--- Supports multiple slide shows on one page.
--- Play pause mode.
--- Navigate to a slide
--- Caption
+- Supports multiple slide shows on one page.
+- Play pause mode.
+- Navigate to a slide.
+- Slide caption.
 
 # Setup
+
+### Required files
 
 Include CSS and js files into HTML document.
 
@@ -40,16 +42,16 @@ Full HTML markup structure inside your HTML document:
   <div class="slideshow-caption"><p class="caption"></p></div>
   <!-- slides -->
   <div class="slide-content">
-    <img src="https://picsum.photos/id/136/800/300" alt="...">
+    <img src="..." alt="...">
     <p class="slide-caption"><a href="#">This is a link</a></p>
   </div>
   <div class="slide-content">
-      <img src="https://picsum.photos/id/155/800/300" alt="...">
+      <img src="..." alt="...">
       <p class="slide-caption">Slide 1 Caption 2</p>
   </div>
 ...
   <div class="slide-content">
-    <img src="https://picsum.photos/id/182/800/300" alt="...">
+    <img src="..." alt="...">
     <p class="slide-caption">Slide n Caption</p>
   </div>
 </div>
@@ -59,22 +61,42 @@ Controls can be ommited if not needed. Minimum HTML markup supported:
 <div id="showOne" class="slideshow-container">
   <!-- slides -->
   <div class="slide-content">
-    <img src="https://picsum.photos/id/136/800/300" alt="...">
+    <img src="..." alt="...">
     <p class="slide-caption"><a href="#">This is a link</a></p>
   </div>
   <div class="slide-content">
-      <img src="https://picsum.photos/id/155/800/300" alt="...">
+      <img src="..." alt="...">
       <p class="slide-caption">Slide 1 Caption 2</p>
   </div>
 ...
   <div class="slide-content">
-    <img src="https://picsum.photos/id/182/800/300" alt="...">
+    <img src="..." alt="...">
     <p class="slide-caption">Slide n Caption</p>
   </div>
 </div>
 ```
 
+#### Initialize slidesow
+
+The slideshow can be initialized in two ways:
+- All slideshows at once with same parameters
+```javascript
+// timeout - timout in ms for the slideshow. if timeout is equal 0,
+// slideshow will not play automatically
+// startIndex - index of the slide to start
+slideshow.init(timeout, startIndex);
+````
+- Initialize every slideshow by id
+```javascript
+// id of the slideshow container
+slidshow.initContainer(id, timeout, startIndex);
+```
+
+
 # Download
 All files are located in the dist/ directory. CSS styles include CSS and SCSS versions.
 
 # Example
+
+Here is an [example](https://github.com/olegoseev/slideshow/tree/master/example) of the slideshow.
+
