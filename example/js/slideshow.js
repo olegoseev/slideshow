@@ -256,7 +256,7 @@ var slideshow = (function () {
   }
 
   const setTimer = (container) => {
-    container.timer = setInterval(() => plusSlides(container.id, 1), container.timeout);
+    container.timer = setInterval(() => plusSlides(container.id, 1), container.timeout == 0 ? 3000 : container.timeout);
   }
 
   const stopTimer = (container) => {
